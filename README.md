@@ -8,7 +8,7 @@ An end-to-end, real-time offshore wind energy digital twin and telemetry dashboa
 
 <!-- PLACEHOLDER FOR WIND POWER PLANT PHOTO -->
 <div align="center">
-  <img src="images/borssele_wind_farm.jpg" alt="Borssele Offshore Wind Farm" width="800px" />
+  <img src="images/borssele_wind_farm.png" alt="Borssele Offshore Wind Farm" width="800px" />
   <p><em>Figure 1: Borssele Offshore Wind Farm (North Sea)</em></p>
 </div>
 
@@ -27,9 +27,18 @@ An end-to-end, real-time offshore wind energy digital twin and telemetry dashboa
 - **Frontend:** Built with React, Vite, and Tailwind CSS; served via Nginx for high-performance dashboard rendering.
 - **Backend Service:** FastAPI orchestration layer delivering dynamic forecast telemetry and physics calculations.
 - **Physics Engine:** Real-time aerodynamic power conversion based on the kinetic energy equation:
-  $$P = \frac{1}{2} \rho A v^3 \cdot \eta$$
-  *(utilizing standard air density $\rho = 1.225 \text{ kg/m}^3$, rotor swept area $A = 18,626 \text{ m}^2$, and nameplate capacity of 8.0 MW per turbine)*.
-- **Predictive Model:** 24 sequential LightGBM model boosters (`model_h1.txt` through `model_h24.txt`) for multi-step hourly wind speed forecasting.
+
+  $$P = \frac{1}{2} \rho A v^3 \eta$$
+
+  Where:
+  - $\rho = 1.225 \text{ kg/m}^3$ (standard air density)
+  - $A = 18,626 \text{ m}^2$ (rotor swept area)
+  - $v$ = incoming wind speed (m/s)
+  - $\eta$ = aerodynamic conversion efficiency
+  - Maximum turbine capacity = 8.0 MW
+
+  The output is capped at the turbine's rated capacity.
+- **Predictive Model:** 24 sequential LightGBM model boosters (`lgb_model_h1.txt` through `lgb_model_h24.txt`) for multi-step hourly wind speed forecasting.
 - **Model Evaluation:** Benchmarked under high-wind/extreme weather events ($> 15 \text{ m/s}$):
   - **+1h Horizon:** RMSE $0.77 \text{ m/s}$, MAE $0.51 \text{ m/s}$
   - **+6h Horizon:** RMSE $2.98 \text{ m/s}$, MAE $2.29 \text{ m/s}$
@@ -52,7 +61,7 @@ cd borssele-digital-twin
 ### 2. Prepare Data & Model Artifacts
 Ensure your dataset and model files are placed in the expected directories:
 - Place `df26.csv` in `backend/data/`
-- Place model text files (`model_h1.txt` ... `model_h24.txt`) in `backend/models/wind_forecast_v1/`
+- Place model text files (`lgb_model_h1.txt` ... `lgb_model_h24.txt`) in `backend/models/wind_forecast_v1/`
 
 ### 3. Build and Run Containers
 Launch both backend (FastAPI) and frontend (Nginx/React) services with a single command:
